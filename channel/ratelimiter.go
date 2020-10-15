@@ -38,7 +38,10 @@ func NewRateLimiter(limit float64, burst int) (*RateLimiter, error) {
 func (rl *RateLimiter) Start() {
 	go func() {
 		for t := range rl.tokens {
-			rl.bucket <- t
+			select {
+			case rl.bucket <- t:
+			default:
+			}
 		}
 	}()
 }
